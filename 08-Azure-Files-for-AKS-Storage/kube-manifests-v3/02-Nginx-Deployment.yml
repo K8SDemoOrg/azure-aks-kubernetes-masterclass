@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet 
+metadata:
+  name: azure-files-nginx-deployment
+  labels:
+    app: azure-files-nginx-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-files-nginx-app
+  serviceName: "azure-files-nginx-service"
+  template:  
+    metadata:
+      labels: 
+        app: azure-files-nginx-app
+    spec:
+      containers:
+        - name: azure-files-nginx-app
+          image: stacksimplify/kube-nginxapp1:1.0.0
+          imagePullPolicy: Always
+          ports: 
+            - containerPort: 80         
+          volumeMounts:
+            - name: my-azurefile-volume
+              mountPath: "/usr/share/nginx/html/app1"
+  volumeClaimTemplates:
+  - metadata:
+      name: my-azurefile-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "azurefile"
+      resources:
+        requests:
+          storage: 5Gi          
+
