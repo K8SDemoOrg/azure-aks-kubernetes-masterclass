@@ -1,24 +1,39 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-cpr
   annotations:
-    kubernetes.io/ingress.class: nginx  
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: letsencrypt   
 spec:  
   rules:
-  - http:
+  - host: eapp1.aks.kpscloud.co.in
+    http:
       paths:
       - path: /app1/
+        pathType: Prefix
         backend:
-          serviceName: app1-nginx-clusterip-service
-          servicePort: 80
+          service:
+            name: app1-nginx-clusterip-service
+            port: 
+              number: 80
       - path: /app2/
+        pathType: Prefix
         backend:
-          serviceName: app2-nginx-clusterip-service
-          servicePort: 80          
+          service:
+            name: app2-nginx-clusterip-service
+            port: 
+              number: 80          
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: usermgmt-webapp-clusterip-service
-          servicePort: 80          
+          service:
+            name: usermgmt-webapp-clusterip-service
+            port: 
+              number: 80       
+  tls:
+  - hosts:
+    - eapp1.aks.kpscloud.co.in
+    secretName: eapp1-kpscloud-secret    
 
   
